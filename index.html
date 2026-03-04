@@ -105,7 +105,7 @@ video{
 
   <!-- Recupera TS -->
   <button onclick="window.location.href='recupera_ts.html'">
-    🕘 Recupera TS in Sospeso
+    🕘 TASTO ESCLUSIVO PER MODULI TS
   </button>
 
   <!-- Scanner QR -->
@@ -257,7 +257,7 @@ function manualSubmit(){
 
 function openChecklist(targa){
   const clean=targa.replace(/[^A-Za-z0-9]/g,"").toUpperCase();
-  window.location.href="ts_trasporto.html?targa="+clean;
+  window.location.href="checklist.html?targa="+clean;
 }
 
 startBtn.onclick=startCamera;
