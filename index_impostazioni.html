@@ -103,7 +103,9 @@ small{color:#555}
     <label>Email destinazione</label>
     <input id="mail_to" type="email">
 
-    <label style="margin-top:14px;display:flex;align-items:center;gap:8px;">
+<label class="checkbox-row">
+
+
       <input type="checkbox" id="documento_definitivo">
       Documento definitivo – deposita su Drive
     </label>
@@ -198,9 +200,15 @@ async function inizializzaTablet(){
   init_status.textContent = "⏳ Caricamento configurazione...";
   init_status.style.color = "#555";
 
-  const ok = await loadConfigurazioneSocieta();
-  init_status.textContent = ok ? "✅ Configurazione caricata" : "❌ Errore caricamento";
-  init_status.style.color = ok ? "green" : "red";
+const ok = await loadConfigurazioneSocieta();
+
+if(ok){
+  caricaDatiEnte(); // 🔴 MANCAVA QUESTO
+}
+
+init_status.textContent = ok ? "✅ Configurazione caricata" : "❌ Errore caricamento";
+init_status.style.color = ok ? "green" : "red";
+
 }
 
 /* ==========================
@@ -224,24 +232,30 @@ function cambiaPin(){
 /* ==========================
    LOAD
 =========================== */
-window.onload = () => {
-  if(localStorage.getItem(ADMIN_UNLOCK)==="1") mostraAdmin();
 
-  codice_societa.value = localStorage.getItem("CODICE_SOCIETA") || "";
-  tablet_code.value = localStorage.getItem(TABLET_CODE_KEY) || "";
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(caricaDatiEnte, 100);
+});
 
-  const raw = localStorage.getItem(LS_KEY_PLAIN);
-  const local = JSON.parse(localStorage.getItem(LS_KEY_LOCAL) || "{}");
+function caricaDatiEnte(){
+  const raw = localStorage.getItem("IMPOSTAZIONI_MISERICORDIA");
+  const local = JSON.parse(localStorage.getItem("IMPOSTAZIONI_MISERICORDIA_LOCAL") || "{}");
 
-  if(raw){
+  if(!raw) return;
+
+  try{
     const cfg = JSON.parse(raw);
-    ente_nome.value  = cfg.ente?.nome || "";
-    ente_citta.value = cfg.ente?.citta || "";
-    ente_via.value   = cfg.ente?.via || "";
-    ente_civico.value= cfg.ente?.civico || "";
-    ente_tel.value   = cfg.ente?.tel || "";
-    mail_to.value    = cfg.mail?.to || "";
+
+    ente_nome.value   = cfg.ente?.nome   || "";
+    ente_citta.value  = cfg.ente?.citta  || "";
+    ente_via.value    = cfg.ente?.via    || "";
+    ente_civico.value = cfg.ente?.civico || "";
+    ente_tel.value    = cfg.ente?.tel    || "";
+    mail_to.value     = cfg.mail?.to     || "";
+
     documento_definitivo.checked = local.documento_definitivo === true;
+  }catch(e){
+    console.error("Errore parsing impostazioni:", e);
   }
 };
 
